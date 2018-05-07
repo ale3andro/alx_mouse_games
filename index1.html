@@ -20,7 +20,7 @@
         var right_click_counter = 0;
         var left_click_counter = 0;
         var game_timer = 30;
-        var right_click_text, left_click_text, cat, dog, rand_animal, click_right, click_wrong, timer_text, play_again;
+        var right_click_text, left_click_text, cat, dog, start_game, rand_animal, click_right, click_wrong, timer_text, play_again;
 
         function preload () {
             game.load.image('backdrop', 'alx_img/forrest.png')
@@ -32,12 +32,12 @@
             game.load.image('scoreboard', 'alx_img/scoreboard.png');
             game.load.image('gameover', 'alx_img/gameover.png');
             game.load.image('play_again', 'alx_img/play_again.png');
+            game.load.image('start_game', 'alx_img/start_game.png');
         }
 
         function create () {
 
             rand_animal = game.rnd.integerInRange(0, 1);
-            console.log(rand_animal);
             game.add.image(0, 0, 'backdrop');
             game.add.image(600,30, 'scoreboard');
             dog = game.add.image(100,300, 'dog');
@@ -59,7 +59,10 @@
             play_again.anchor.setTo(0.5, 0.5);
             play_again.alpha=0.2;
             play_again.inputEnabled=false;
-            
+
+            start_game = game.add.image(480, 330, 'start_game');
+            start_game.anchor.setTo(0.5, 0.5);
+            start_game.inputEnabled = true;            
 
             var style = { font: "60px Courier", fill: "#fff", tabs: 132 };
             var style2 = { font: "30px Courier", fill: "#fff", tabs: 132 };
@@ -70,10 +73,11 @@
             timer_text = game.add.text(723, 110, game_timer, style);
             timer_text.anchor.setTo(0.5, 0.5);
             
-            dog.inputEnabled = true;
-            cat.inputEnabled = true;
+            dog.inputEnabled = false;
+            cat.inputEnabled = false;
             dog.events.onInputDown.add(listener, this);
             cat.events.onInputDown.add(listener, this);
+            start_game.events.onInputDown.add(listener, this);
             game.input.mouse.capture = true;
 
             game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
@@ -82,6 +86,12 @@
             else   
                 dog.visible = false;
 
+            
+        }
+
+        function game_start() {
+            dog.inputEnabled=true;
+            cat.inputEnabled=true;
             timer.start();
         }
 
@@ -126,15 +136,19 @@
             game.add.tween(click_wrong).to( { alpha: 0.2 }, 500, Phaser.Easing.Linear.None, true);
         }
         function listener(sprite, pointer) {
+            if (pointer.leftButton.isDown && sprite==start_game) { 
+                start_game.inputEnabled=false;
+                start_game.visible=false;
+                game_start();
+            }
+
             if (pointer.leftButton.isDown && sprite==cat) { 
-                console.log("Left click");
                 left_click_counter++;
                 right_click_counter++;
                 light_right();
                 update_text();   
             }
             else if (pointer.rightButton.isDown && sprite==dog) {
-                console.log("Right click");
                 right_click_counter++;
                 light_right();
                 update_text();

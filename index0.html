@@ -37,7 +37,6 @@
         function create () {
 
             rand_animal = game.rnd.integerInRange(20, 780);
-            console.log(rand_animal);
             game.add.image(0, 0, 'backdrop');
             game.add.image(600,30, 'scoreboard');
             mushroom = game.add.image(rand_animal, 350, 'mushroom');
@@ -125,7 +124,6 @@
            }
            
            if (pointer.rightButton.isDown && sprite==mushroom) {
-                console.log("Right click");
                 right_click_counter++;
                 light_right();
                 update_text();
