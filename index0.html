@@ -20,17 +20,18 @@
         var right_click_counter = 0;
         var left_click_counter = 0;
         var game_timer = 30;
-        var right_click_text, left_click_text, cat, dog, rand_animal, click_right, click_wrong, timer_text, play_again;
+        var right_click_text, left_click_text, mushroom, rand_animal, click_right, click_wrong, timer_text, play_again;
 
         function preload () {
             game.load.image('backdrop', 'alx_img/forrest.png')
            
-            game.load.image('dog', 'alx_img/dog.png');
             game.load.image('right', 'alx_img/right.png');
             game.load.image('wrong', 'alx_img/wrong.png');
             game.load.image('scoreboard', 'alx_img/scoreboard.png');
             game.load.image('gameover', 'alx_img/gameover.png');
             game.load.image('play_again', 'alx_img/play_again.png');
+            game.load.image('mushroom', 'alx_img/mushroom.png');
+            game.load.image('start_game', 'alx_img/start_game.png');
         }
 
         function create () {
@@ -39,7 +40,7 @@
             console.log(rand_animal);
             game.add.image(0, 0, 'backdrop');
             game.add.image(600,30, 'scoreboard');
-            dog = game.add.image(rand_animal, 250, 'dog');
+            mushroom = game.add.image(rand_animal, 350, 'mushroom');
             timer = game.time.create(false);
             timer.loop(1000, timer_callback, this);
 
@@ -56,22 +57,31 @@
             play_again.anchor.setTo(0.5, 0.5);
             play_again.alpha=0.2;
             play_again.inputEnabled=false;
+
+            start_game = game.add.image(480, 330, 'start_game');
+            start_game.anchor.setTo(0.5, 0.5);
+            start_game.inputEnabled = true;
             
 
             var style = { font: "60px Courier", fill: "#fff", tabs: 132 };
-            var style2 = { font: "30px Courier", fill: "#fff", tabs: 132 };
-            game.add.text(10, 560, "Δεξί κλικ στο σκύλο", style2);
+            var style2 = { font: "20px Courier", fill: "#fff", tabs: 132 };
+            game.add.text(10, 560, "Μάζεψε όσα περισσότερα μανιτάρια μπορείς", style2);
+            game.add.text(10, 580, "χρησιμοποιώντας το δεξί κλικ", style2);
             right_click_text = game.add.text(890, 110, "0", style);
             right_click_text.anchor.setTo(0.5, 0.5);
             timer_text = game.add.text(723, 110, game_timer, style);
             timer_text.anchor.setTo(0.5, 0.5);
             
-            dog.inputEnabled = true;
-            dog.events.onInputDown.add(listener, this);
+            mushroom.inputEnabled = false;
+            mushroom.events.onInputDown.add(listener, this);
+            start_game.events.onInputDown.add(listener, this);
             game.input.mouse.capture = true;
 
             game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
+        }
 
+        function game_start() {
+            mushroom.inputEnabled = true;
             timer.start();
         }
 
@@ -83,7 +93,7 @@
                 game.add.image(320,300, 'gameover');
                 play_again.alpha=1;
                 play_again.inputEnabled=true;
-                dog.inputEnabled=false;
+                mushroom.inputEnabled=false;
                 play_again.events.onInputDown.add(on_play_again, this);
 
             }
@@ -96,7 +106,7 @@
         function update_text() {
             right_click_text.setText(right_click_counter);
             rand_animal = game.rnd.integerInRange(20, 780);
-            dog.x=rand_animal;
+            mushroom.x=rand_animal;
         }
 
         function light_right() {
@@ -108,7 +118,13 @@
             game.add.tween(click_wrong).to( { alpha: 0.2 }, 500, Phaser.Easing.Linear.None, true);
         }
         function listener(sprite, pointer) {
-           if (pointer.rightButton.isDown && sprite==dog) {
+           if (pointer.leftButton.isDown && sprite==start_game) {
+               start_game.inputEnabled=false;
+               start_game.visible=false;
+               game_start();
+           }
+           
+           if (pointer.rightButton.isDown && sprite==mushroom) {
                 console.log("Right click");
                 right_click_counter++;
                 light_right();
